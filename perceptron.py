@@ -46,16 +46,33 @@ class PerceptronClassifier:
         datum is a counter from features to values for those features
         (and thus represents a vector a values).
         """
-
+        
         self.features = trainingData[0].keys() # could be useful later
         # DO NOT ZERO OUT YOUR WEIGHTS BEFORE STARTING TRAINING, OR
         # THE AUTOGRADER WILL LIKELY DEDUCT POINTS.
-
+        
+        
         for iteration in range(self.max_iterations):
             print "Starting iteration ", iteration, "..."
             for i in range(len(trainingData)):
-                "*** YOUR CODE HERE ***"
-                util.raiseNotDefined()
+                scores = util.Counter()
+                
+                for l in self.legalLabels:
+                    #determine the score for a label for trainingData[i] and add it to a list of scores
+                    score = util.Counter()
+                    score = trainingData[i] * self.weights[l]
+                    scores[l] = score
+                
+                #from the list of scores, get the label with the highest score
+                guessedLabel = scores.argMax()
+                
+                
+                #if our estimate is incorrect, adjust the weights accordingly
+                if(trainingLabels[i] != guessedLabel):
+                    self.weights[trainingLabels[i]] = self.weights[trainingLabels[i]] + trainingData[i]
+                    self.weights[guessedLabel] = self.weights[guessedLabel] - trainingData[i]
+                
+        #util.raiseNotDefined()
 
     def classify(self, data ):
         """
@@ -78,8 +95,18 @@ class PerceptronClassifier:
         Returns a list of the 100 features with the greatest weight for some label
         """
         featuresWeights = []
-
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        
+        weights = []
+        
+        for w in self.weights[label]:
+            weights.append((w,self.weights[label][w]))
+            
+        #sorts by the second value of a tuple, switch to desc
+        sortedWeights = sorted(weights, key=lambda tuple: tuple[1])
+        
+        length = len(sortedWeights)
+        
+        for i in range(100):
+            featuresWeights.append(sortedWeights[length - i - 1])
 
         return featuresWeights
