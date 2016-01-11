@@ -61,7 +61,73 @@ class MiraClassifier:
         representing a vector of values.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        cweights = {}
+        cscores = {}
+        for c in Cgrid:
+            cweights[c] = self.weights.copy()
+            cscores[c] = 0
+        
+        def calcT(c, i):
+            #print type(trainingData[i])
+            return min(c, ((cweights[c][guessedLabel] - cweights[c][trainingLabels[i]]) * trainingData[i] + 1.0) / (2.0 * (trainingData[i] * trainingData[i])))
+        
+        def tMaalF(t, Ef):
+            for f in Ef:
+                Ef[f] *= t
+            return Ef
+        
+        for c in Cgrid:
+            for iteration in range(self.max_iterations):
+                print "Starting iteration ", iteration, "..."
+                for i in range(len(trainingData)):
+                    scores = util.Counter()
+                    
+                    for l in self.legalLabels:
+                        #determine the score for a label for trainingData[i] and add it to a list of scores
+                        score = util.Counter()
+                        score = trainingData[i] * cweights[c][l]
+                        scores[l] = score
+                    
+                    #from the list of scores, get the label with the highest score
+                    guessedLabel = scores.argMax()
+                    
+                    #if our estimate is incorrect, adjust the weights accordingly
+                    if(trainingLabels[i] != guessedLabel):
+                        calc = calcT(c, i)
+                        
+                        temp = trainingData[i]
+                        tMaalF(calc, temp)                    
+                    
+                        cweights[c][trainingLabels[i]] = cweights[c][trainingLabels[i]] + temp
+                        cweights[c][guessedLabel] = cweights[c][guessedLabel] - temp
+        
+        
+        for c in Cgrid:
+            for i in range(len(validationData)):
+            #print "Starting validation ", i, "..."
+            
+                scores = util.Counter()
+                
+                for l in self.legalLabels:
+                    #determine the score for a label for trainingData[i] and add it to a list of scores
+                    score = util.Counter()
+                    score = validationData[i] * cweights[c][l]
+                    scores[l] = score
+                
+                #from the list of scores, get the label with the highest score
+                guessedLabel = scores.argMax()
+                
+                
+                #if our estimate is incorrect, adjust the weights accordingly
+                if(validationLabels[i] == guessedLabel):
+                    cscores[c] = cscores[c] + 1
+        
+        bestC = 0
+        for c in Cgrid:
+            if(cscores[c] > bestC):
+                bestC = c
+        
+        self.weights = cweights[bestC]
 
     def classify(self, data ):
         """

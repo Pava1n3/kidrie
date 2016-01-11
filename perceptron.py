@@ -100,13 +100,12 @@ class PerceptronClassifier:
         
         for w in self.weights[label]:
             weights.append((w,self.weights[label][w]))
-            
-        #sorts by the second value of a tuple, switch to desc
-        sortedWeights = sorted(weights, key=lambda tuple: tuple[1])
         
-        length = len(sortedWeights)
+        #SHOULD HAVE USED COUNTER.SORTEDKEYS D:
+        #sorts by the second value of a tuple, switch to desc order
+        sortedWeights = sorted(weights, key=lambda ((x,y),z): z, reverse=True)
         
         for i in range(100):
-            featuresWeights.append(sortedWeights[length - i - 1])
-
+            featuresWeights.append(sortedWeights[i][0])
+        
         return featuresWeights
