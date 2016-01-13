@@ -68,13 +68,14 @@ class MiraClassifier:
             cscores[c] = 0
         
         def calcT(c, i):
-            #print type(trainingData[i])
-            t = ((cweights[c][guessedLabel] - cweights[c][trainingLabels[i]]) * trainingData[i] + 1.0) / (2 * (trainingData[i] * trainingData[i]))
-            return min(c, t)
+            t = ((cweights[c][guessedLabel] - cweights[c][trainingLabels[i]]) * trainingData[i] + 1.0) / (2.0 * (trainingData[i] * trainingData[i]))
+            #print t
+            return c#min(c, t)
         
         def tMaalF(t, Ef):
             for f in Ef:
-                Ef[f] *= t
+                g = float(Ef[f] * t)
+                Ef[f] = g
             return Ef
         
         for c in Cgrid:
