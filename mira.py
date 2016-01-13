@@ -61,26 +61,15 @@ class MiraClassifier:
         representing a vector of values.
         """
         "*** YOUR CODE HERE ***"
-        cweights = {}
+        cweights = util.Counter()
         cscores = {}
         for c in Cgrid:
-            cweights[c] = self.weights.copy()
             cscores[c] = 0
         
-        def calcT(c, i):
-            t = ((cweights[c][guessedLabel] - cweights[c][trainingLabels[i]]) * trainingData[i] + 1.0) / (2.0 * (trainingData[i] * trainingData[i]))
-            #print t
-            return c#min(c, t)
-        
-        def tMaalF(t, Ef):
-            for f in Ef:
-                g = float(Ef[f] * t)
-                Ef[f] = g
-            return Ef
-        
-        for c in Cgrid:
-            for iteration in range(self.max_iterations):
+        for iteration in range(self.max_iterations):
+            for c in Cgrid:
                 print "Starting iteration ", iteration, " ", c, "..."
+                cweights[c] = self.weights.copy()
                 for i in range(len(trainingData)):
                     #A list of the scores indicating how much of a match a label has with this piece of data
                     scores = util.Counter()
@@ -94,12 +83,17 @@ class MiraClassifier:
                     
                     #if our estimate is incorrect, adjust the weights accordingly
                     if(trainingLabels[i] != guessedLabel):
-                        t = calcT(c, i)
+                        #calculate t
+                        t = min(c, ((cweights[c][guessedLabel] - cweights[c][trainingLabels[i]]) * trainingData[i] + 1.0) / (2.0 * (trainingData[i] * trainingData[i])))
+                        #t = c
+                        
+                        #calculate t*f
                         temp = trainingData[i]
-                        tMaalF(t, temp)                    
+                        for tmp in temp:
+                            temp[tmp] *= t               
                     
-                        cweights[c][trainingLabels[i]] = cweights[c][trainingLabels[i]] + temp
-                        cweights[c][guessedLabel] = cweights[c][guessedLabel] - temp
+                        cweights[c][trainingLabels[i]] += temp
+                        cweights[c][guessedLabel] -= temp
         
         for c in Cgrid:
             self.weights = cweights[c].copy()
@@ -107,7 +101,7 @@ class MiraClassifier:
             
             for i in range(len(validationResults)):
                 if(validationResults[i] == validationLabels[i]):
-                    cscores[c] = cscores[c] + 1
+                    cscores[c] += 1
 
         bestC = Cgrid[0]
         bestCscore = 0
