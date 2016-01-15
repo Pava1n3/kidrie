@@ -61,61 +61,53 @@ class MiraClassifier:
         representing a vector of values.
         """
         "*** YOUR CODE HERE ***"
-        cweights = util.Counter()
-        cscores = {}
-        for c in Cgrid:
-            cscores[c] = 0
+        Cweights = {}
+        Cscores = {}
         
-        for iteration in range(self.max_iterations):
-            for c in Cgrid:
-                print "Starting iteration ", iteration, " ", c, "..."
-                cweights[c] = self.weights.copy()
-                for i in range(len(trainingData)):
-                    #A list of the scores indicating how much of a match a label has with this piece of data
-                    scores = util.Counter()
+        def calcTau(cee, wya, wy, f):
+            return min(cee, (((wya - wy) * f + 1.0) / (2 * (f * f))))
+        
+        for c in Cgrid:
+            Cweights[c] = self.weights.copy()
+            Cscores[c] = 0
+            for i in range(self.max_iterations):
+                print "Iteration ", i, " ", c
+                for j in range(len(trainingData)):
+                    results = util.Counter()
                     
                     for l in self.legalLabels:
-                        #determine the score for a label for trainingData[i] and add it to a list of scores
-                        scores[l] = trainingData[i] * cweights[c][l]
+                        results[l] = (trainingData[j] * Cweights[c][l], l)
                     
-                    #from the list of scores, get the label with the highest score
-                    guessedLabel = scores.argMax()
+                    est = results.argMax()
                     
-                    #if our estimate is incorrect, adjust the weights accordingly
-                    if(trainingLabels[i] != guessedLabel):
-                        #calculate t
-                        t = min(c, ((cweights[c][guessedLabel] - cweights[c][trainingLabels[i]]) * trainingData[i] + 1.0) / (2.0 * (trainingData[i] * trainingData[i])))
-                        #t = c
+                    if(trainingLabels[j] != est):
+                        #print j
+                        tau = calcTau(c, Cweights[c][est], Cweights[c][trainingLabels[j]], trainingData[j])
                         
-                        #calculate t*f
-                        temp = trainingData[i]
-                        for tmp in temp:
-                            temp[tmp] *= t               
-                    
-                        cweights[c][trainingLabels[i]] += temp
-                        cweights[c][guessedLabel] -= temp
-        
-        for c in Cgrid:
-            self.weights = cweights[c].copy()
-            validationResults = self.classify(validationData)
+                        temp = trainingData[j]
+                        for t in temp:
+                            temp[t] *= tau
+                            
+                        Cweights[c][trainingLabels[j]] = Cweights[c][trainingLabels[j]] + temp
+                        Cweights[c][est] = Cweights[c][est] - temp
             
-            for i in range(len(validationResults)):
-                if(validationResults[i] == validationLabels[i]):
-                    cscores[c] += 1
-
-        if(len(Cgrid) > 1):
-            bestC = 0.002
-        else:
-            bestC = 0.001
-        bestCscore = 0
-        for c in Cgrid:
-            print cscores[c]
-            if(cscores[c] > bestCscore):
-                bestC = c
-                bestCscore = cscores[c]
         
-        print bestC, "best c"
-        self.weights = cweights[bestC].copy()
+        for c in Cgrid:
+            self.weights = Cweights[c].copy()
+            valResults = self.classify(validationData)
+            for i in range(len(validationData)):
+                if(valResults[i] == validationLabels[i]):
+                    Cscores[c] += 1
+        
+        bestScore = 0
+        bestC = Cgrid[0]
+        for c in Cgrid:
+            print Cscores[c]
+            if(Cscores[c] > bestScore):
+                bestScore = Cscores[c]
+                bestC = c
+                
+        self.weights = Cweights[bestC].copy()
 
     def classify(self, data ):
         """
