@@ -80,8 +80,6 @@ def enhancedFeatureExtractorDigit(datum):
     "*** YOUR CODE HERE ***"
     util.raiseNotDefined()
 
-    return features
-
 
 
 def basicFeatureExtractorPacman(state):
@@ -104,7 +102,7 @@ def basicFeatureExtractorPacman(state):
 
 def enhancedFeatureExtractorPacman(state):
     """
-    Your feature extraction playground.
+    Your feature extraction torture dungeon.
 
     You should return a util.Counter() of features
     for each (state, action) pair along with a list of the legal actions
@@ -124,9 +122,55 @@ def enhancedPacmanFeatures(state, action):
     """
     features = util.Counter()
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    #My awesome features
+    features["willDieNextTurn"] = 0
+    features["nearestGhost"] = 50
+    features["nearestFood"] = 50
+    features["nearestCapsule"] = 50      #Bill Cosby would be proud
+    features["foodLeft"] = 0
+    features["score"] = 0
+    
+    #Not the distance in New York
+    def manhattanDistance(xy1, xy2):
+        return abs(xy1[0] - xy2[0]) + abs(xy1[1] - xy2[1])
+    
+    #Look at the successor for a variety of things
+    suc = state.generateSuccessor(0, action)
+    nextMan = suc.getPacmanPosition()           #new position Pacman will have
+    
+    features["foodLeft"] = suc.getNumFood()
+    features["score"] = suc.getScore()
+    
+    #Do spoopy things with a spoopy list
+    for p in suc.getGhostPositions():
+        if(p == nextMan):
+            features["willDieNextTurn"] = 100
+        
+        #Find the manhattanDistance to the nearest ghost
+        gdist = manhattanDistance(nextMan, p)
+        if(gdist < features["nearestGhost"]):
+            features["nearestGhost"] = gdist
+    
+    #Food grid of the successor
+    sucFoodGrid = suc.getFood()
+    
+    rlist = sucFoodGrid.asList()
+    for r in rlist:
+        if(sucFoodGrid[r[0]][r[1]]):
+            mand = manhattanDistance(nextMan, r)
+            if(mand < features["nearestFood"]):
+                features["nearestFood"] = mand
+    
+    #Get the capsules
+    """clist = suc.getCapsules()
+    
+    for c in clist:
+        mand = manhattanDistance(nextMan, c)
+        if(mand < features["nearestCapsule"]):
+            features["nearestCapsule"] = mand"""
+                
     return features
-
+    
 
 def contestFeatureExtractorDigit(datum):
     """

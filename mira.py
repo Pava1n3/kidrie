@@ -103,7 +103,10 @@ class MiraClassifier:
                 if(validationResults[i] == validationLabels[i]):
                     cscores[c] += 1
 
-        bestC = Cgrid[0]
+        if(len(Cgrid) > 1):
+            bestC = 0.002
+        else:
+            bestC = 0.001
         bestCscore = 0
         for c in Cgrid:
             print cscores[c]
@@ -111,6 +114,7 @@ class MiraClassifier:
                 bestC = c
                 bestCscore = cscores[c]
         
+        print bestC, "best c"
         self.weights = cweights[bestC].copy()
 
     def classify(self, data ):
