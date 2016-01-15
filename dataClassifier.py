@@ -126,7 +126,7 @@ def enhancedPacmanFeatures(state, action):
     features["willDieNextTurn"] = 0
     features["nearestGhost"] = 50
     features["nearestFood"] = 50
-    features["nearestCapsule"] = 50      #Bill Cosby would be proud
+    #features["nearestCapsule"] = 50      
     features["foodLeft"] = 0
     features["score"] = 0
     
