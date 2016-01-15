@@ -1,4 +1,4 @@
-# dataClassifier.py
+﻿# dataClassifier.py
 # -----------------
 # Licensing Information:  You are free to use or extend these projects for
 # educational purposes provided that (1) you do not distribute or publish
@@ -78,7 +78,109 @@ def enhancedFeatureExtractorDigit(datum):
     features =  basicFeatureExtractorDigit(datum)
 
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    for y in range(DIGIT_DATUM_HEIGHT):
+        count = 0
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x,y)] == 1:
+                count += 1
+        for i in range(DIGIT_DATUM_WIDTH):
+            if i == count:
+                features["y"+str(y)+str(i)] = 1
+            else:
+                features["y"+str(y)+str(i)] = 0
+    
+    #for x in range(DIGIT_DATUM_WIDTH):
+    #    count = 0
+    #    for y in range(DIGIT_DATUM_HEIGHT):
+    #        if features[(x,y)] == 1:
+    #            count += 1
+    #    for i in range(DIGIT_DATUM_HEIGHT):
+    #        if i == count:
+    #            features["x"+str(x)+str(i)] = 1
+    #        else:
+    #            features["x"+str(x)+str(i)] = 0
+
+    #for x in range(DIGIT_DATUM_WIDTH - 1):
+    #    for y in range(DIGIT_DATUM_HEIGHT - 1):
+    #        if features[(x,y)] == 1:
+    #            #print datum
+    #            #print "Currently", (x,y)
+    #            # first go east or south-east
+    #            currentx = x + 1
+    #            currenty = y
+    #            wentEast = False
+    #            while True:
+    #                #print "Trying east", (currentx, currenty)
+    #                currentx += 1
+    #                if features[(currentx, currenty)] == 1:
+    #                    wentEast = True
+    #                    continue
+    #                else:
+    #                    currenty += 1
+    #                    if features[(currentx, currenty)] == 1:
+    #                        wentEast = True
+    #                        continue
+    #                    else:
+    #                        break
+
+    #            # then go south or south-west
+    #            currenty += 1
+    #            wentSouth = False
+    #            while wentEast:
+    #                #print "Trying south", (currentx, currenty)
+    #                currenty += 1
+    #                if features[(currentx, currenty)] == 1:
+    #                    wentSouth = True
+    #                    continue
+    #                else:
+    #                    currentx -= 1
+    #                    if features[(currentx, currenty)] == 1:
+    #                        wentSouth = True
+    #                        continue
+    #                    else:
+    #                        break
+
+    #            # then go west or north-west
+    #            currentx -= 1
+    #            wentWest = False
+    #            while wentSouth:
+    #                #print "Trying west", (currentx, currenty)
+    #                currentx -= 1
+    #                if features[(currentx, currenty)] == 1:
+    #                    wentWest = True
+    #                    continue
+    #                else:
+    #                    currenty -= 1
+    #                    if features[(currentx, currenty)] == 1:
+    #                        wentWest = True
+    #                        continue
+    #                    else:
+    #                        break
+
+    #            # then go north or north-east
+    #            currenty -= 1
+    #            wentNorth = False
+    #            while wentWest:
+    #                #print "Trying north", (currentx, currenty)
+    #                currenty -= 1
+    #                if features[(currentx, currenty)] == 1:
+    #                    wentNorth = True
+    #                    continue
+    #                else:
+    #                    currentx += 1
+    #                    if features[(currentx, currenty)] == 1:
+    #                        wentNorth = True
+    #                        continue
+    #                    else:
+    #                        break
+
+    #            # if there is a path that went in all these directions in that order, then feature = 1
+    #            if wentNorth:
+    #                features["going"] = 100
+    #                #print datum
+    #            else:
+    #                features["going"] = 0
+    #                #print datum
 
 
 
