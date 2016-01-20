@@ -78,111 +78,54 @@ def enhancedFeatureExtractorDigit(datum):
     features =  basicFeatureExtractorDigit(datum)
 
     "*** YOUR CODE HERE ***"
+    # for every row, get how many pixels are on and store that as a binary feature.
     for y in range(DIGIT_DATUM_HEIGHT):
         count = 0
         for x in range(DIGIT_DATUM_WIDTH):
             if features[(x,y)] == 1:
                 count += 1
+
         for i in range(DIGIT_DATUM_WIDTH):
             if i == count:
-                features["y"+str(y)+str(i)] = 1
+                features["y"+str(y)+"-"+str(i)] = 1
             else:
-                features["y"+str(y)+str(i)] = 0
+                features["y"+str(y)+"-"+str(i)] = 0
     
-    #for x in range(DIGIT_DATUM_WIDTH):
-    #    count = 0
-    #    for y in range(DIGIT_DATUM_HEIGHT):
-    #        if features[(x,y)] == 1:
-    #            count += 1
-    #    for i in range(DIGIT_DATUM_HEIGHT):
-    #        if i == count:
-    #            features["x"+str(x)+str(i)] = 1
-    #        else:
-    #            features["x"+str(x)+str(i)] = 0
+    # calculate how many pixels are on in the top half, bottom half, left half, and right half
+    top = 0
+    bottom = 0
+    left = 0
+    right = 0
+    for y in range(DIGIT_DATUM_HEIGHT):
+        for x in range(DIGIT_DATUM_WIDTH):
+            if features[(x,y)] == 1:
+                if y < DIGIT_DATUM_HEIGHT / 2:
+                    top += 1
+                else:
+                    bottom += 1
 
-    #for x in range(DIGIT_DATUM_WIDTH - 1):
-    #    for y in range(DIGIT_DATUM_HEIGHT - 1):
-    #        if features[(x,y)] == 1:
-    #            #print datum
-    #            #print "Currently", (x,y)
-    #            # first go east or south-east
-    #            currentx = x + 1
-    #            currenty = y
-    #            wentEast = False
-    #            while True:
-    #                #print "Trying east", (currentx, currenty)
-    #                currentx += 1
-    #                if features[(currentx, currenty)] == 1:
-    #                    wentEast = True
-    #                    continue
-    #                else:
-    #                    currenty += 1
-    #                    if features[(currentx, currenty)] == 1:
-    #                        wentEast = True
-    #                        continue
-    #                    else:
-    #                        break
+                if x < DIGIT_DATUM_WIDTH / 2:
+                    left += 1
+                else:
+                    right += 1
 
-    #            # then go south or south-west
-    #            currenty += 1
-    #            wentSouth = False
-    #            while wentEast:
-    #                #print "Trying south", (currentx, currenty)
-    #                currenty += 1
-    #                if features[(currentx, currenty)] == 1:
-    #                    wentSouth = True
-    #                    continue
-    #                else:
-    #                    currentx -= 1
-    #                    if features[(currentx, currenty)] == 1:
-    #                        wentSouth = True
-    #                        continue
-    #                    else:
-    #                        break
+    # store as a feature whether the top half or bottom half contains more pixels that are on
+    if top > bottom:
+        features["top"] = 1
+        features["bottom"] = 0
+    else:
+        features["top"] = 0
+        features["bottom"] = 1
 
-    #            # then go west or north-west
-    #            currentx -= 1
-    #            wentWest = False
-    #            while wentSouth:
-    #                #print "Trying west", (currentx, currenty)
-    #                currentx -= 1
-    #                if features[(currentx, currenty)] == 1:
-    #                    wentWest = True
-    #                    continue
-    #                else:
-    #                    currenty -= 1
-    #                    if features[(currentx, currenty)] == 1:
-    #                        wentWest = True
-    #                        continue
-    #                    else:
-    #                        break
+    # store as a feature whether the left half or right half contains more pixels that are on
+    if left > right:
+        features["left"] = 1
+        features["right"] = 0
+    else:
+        features["left"] = 0
+        features["right"] = 1
 
-    #            # then go north or north-east
-    #            currenty -= 1
-    #            wentNorth = False
-    #            while wentWest:
-    #                #print "Trying north", (currentx, currenty)
-    #                currenty -= 1
-    #                if features[(currentx, currenty)] == 1:
-    #                    wentNorth = True
-    #                    continue
-    #                else:
-    #                    currentx += 1
-    #                    if features[(currentx, currenty)] == 1:
-    #                        wentNorth = True
-    #                        continue
-    #                    else:
-    #                        break
-
-    #            # if there is a path that went in all these directions in that order, then feature = 1
-    #            if wentNorth:
-    #                features["going"] = 100
-    #                #print datum
-    #            else:
-    #                features["going"] = 0
-    #                #print datum
-
-
+    return features
 
 def basicFeatureExtractorPacman(state):
     """
