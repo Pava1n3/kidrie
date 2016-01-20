@@ -64,12 +64,15 @@ class MiraClassifier:
         Cweights = {}
         Cscores = {}
         
+        #calculate the value of tau
         def calcTau(cee, wya, wy, f):
             return min(cee, (((wya - wy) * f + 1.0) / (2 * (f * f))))
         
         for c in Cgrid:
-            Cweights[c] = self.weights.copy()
-            Cscores[c] = 0
+            Cweights[c] = self.weights.copy()   #the weights associated with a value of C
+            Cscores[c] = 0                      #a counter used to determine the best performing value for C
+            
+            #do the iterations
             for i in range(self.max_iterations):
                 print "Iteration ", i, " ", c
                 for j in range(len(trainingData)):
@@ -78,20 +81,23 @@ class MiraClassifier:
                     for l in self.legalLabels:
                         results[l] = (trainingData[j] * Cweights[c][l], l)
                     
-                    est = results.argMax()
+                    est = results.argMax()      #determine which label it most likely is for this trainingData
                     
+                    #If we geussed wrong, we adjust the weights
                     if(trainingLabels[j] != est):
-                        #print j
                         tau = calcTau(c, Cweights[c][est], Cweights[c][trainingLabels[j]], trainingData[j])
                         
+                        #multiply tau with f
                         temp = trainingData[j]
                         for t in temp:
                             temp[t] *= tau
-                            
+                        
+                        #adjust the weights
                         Cweights[c][trainingLabels[j]] = Cweights[c][trainingLabels[j]] + temp
                         Cweights[c][est] = Cweights[c][est] - temp
             
         
+        #work on the validationData, scoring each c to see how well it performs
         for c in Cgrid:
             self.weights = Cweights[c].copy()
             valResults = self.classify(validationData)
@@ -99,6 +105,7 @@ class MiraClassifier:
                 if(valResults[i] == validationLabels[i]):
                     Cscores[c] += 1
         
+        #determine the best value for c
         bestScore = 0
         bestC = Cgrid[0]
         for c in Cgrid:
@@ -107,7 +114,7 @@ class MiraClassifier:
                 bestScore = Cscores[c]
                 bestC = c
         
-        #print "Best C is ", bestC
+        #Based on the best C, set the weights
         self.weights = Cweights[bestC].copy()
 
     def classify(self, data ):
@@ -142,6 +149,7 @@ class MiraClassifier:
         
         for i in range(100):
             featuresWeights.append(sortedWeights[i][0])
+        
         
         return featuresWeights        
 
