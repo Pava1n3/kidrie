@@ -106,7 +106,8 @@ class MiraClassifier:
             if(Cscores[c] > bestScore):
                 bestScore = Cscores[c]
                 bestC = c
-                
+        
+        #print "Best C is ", bestC
         self.weights = Cweights[bestC].copy()
 
     def classify(self, data ):
@@ -124,4 +125,23 @@ class MiraClassifier:
             guesses.append(vectors.argMax())
         return guesses
 
+    def findHighWeightFeatures(self, label):
+        """
+        Returns a list of the 100 features with the greatest weight for some label
+        """
+        featuresWeights = []
+        
+        weights = []
+        
+        for w in self.weights[label]:
+            weights.append((w,self.weights[label][w]))
+        
+        #SHOULD HAVE USED COUNTER.SORTEDKEYS D:
+        #sorts by the second value of a tuple, switch to desc order
+        sortedWeights = sorted(weights, key=lambda ((x,y),z): z, reverse=True)
+        
+        for i in range(100):
+            featuresWeights.append(sortedWeights[i][0])
+        
+        return featuresWeights        
 

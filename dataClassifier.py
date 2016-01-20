@@ -229,8 +229,8 @@ def enhancedPacmanFeatures(state, action):
     features["nearestGhost"] = 50
     features["nearestFood"] = 50
     #features["nearestCapsule"] = 50      
-    features["foodLeft"] = 0
     features["score"] = 0
+    features["scaredtimers"] = 0
     
     #Not the distance in New York
     def manhattanDistance(xy1, xy2):
@@ -240,7 +240,6 @@ def enhancedPacmanFeatures(state, action):
     suc = state.generateSuccessor(0, action)
     nextMan = suc.getPacmanPosition()           #new position Pacman will have
     
-    features["foodLeft"] = suc.getNumFood()
     features["score"] = suc.getScore()
     
     #Do spoopy things with a spoopy list
@@ -252,6 +251,10 @@ def enhancedPacmanFeatures(state, action):
         gdist = manhattanDistance(nextMan, p)
         if(gdist < features["nearestGhost"]):
             features["nearestGhost"] = gdist
+            
+    #return the scaredtimers of ghosts
+    for g in suc.getGhostStates():
+        features["scaredtimers"] += g.scaredTimer
     
     #Food grid of the successor
     sucFoodGrid = suc.getFood()
@@ -269,7 +272,7 @@ def enhancedPacmanFeatures(state, action):
     for c in clist:
         mand = manhattanDistance(nextMan, c)
         if(mand < features["nearestCapsule"]):
-            features["nearestCapsule"] = mand"""
+            features["nearestCapsule"] = mand + 30"""
                 
     return features
     
